@@ -14,6 +14,7 @@ module.exports = (req, res, next) => {
        req.auth = {
            userId: userId
        };
+       
        // Passe à la prochaine étape 
 	    next();
    } catch(error) {
