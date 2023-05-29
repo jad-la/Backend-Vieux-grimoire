@@ -68,7 +68,7 @@ const validateModif = (req, res, next) => {
       // Si aucun fichier n'est présent, alors utiliser directement req.body
       bookObject = req.body;
     }
-
+    
     const bookSchemaU = Joi.object({
       userId: Joi.string().optional(),
       title: Joi.string().optional(),
@@ -76,7 +76,7 @@ const validateModif = (req, res, next) => {
       imageUrl: Joi.string().optional(),
       year: Joi.number().optional(),
       genre: Joi.string().optional(),
-    }).min(1).unknown(true);
+    }).min(1).required();
 
     const { error } = bookSchemaU.validate(bookObject);
     if (error) {
