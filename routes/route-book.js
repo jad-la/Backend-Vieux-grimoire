@@ -5,10 +5,7 @@ const multer = require('../middleware/multer-config');
 const middleJoi = require('../middleware/joimiddl')
 
 
-
 const router = express.Router();
-
-
 
 router.post('/', auth, multer.upload, multer.resizeImage, middleJoi.validateCreate, controllerBook.createBook);
 router.put('/:id', auth, multer.upload, multer.resizeImage, middleJoi.validateModif, controllerBook.modifBook);

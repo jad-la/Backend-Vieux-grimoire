@@ -3,7 +3,6 @@ const app = require('./app');
 const connectDB = require('./config/db');
 const dotenv = require('dotenv').config();
 
-//connection à la base de données
 connectDB();
 
 const normalizePort = val => {

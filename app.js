@@ -1,13 +1,11 @@
 const express = require('express');
-const mongoose = require('mongoose')
+const helmet = require('helmet');
 const routeBook = require('./routes/route-book');
 const routeUser = require('./routes/route-user');
 const path = require('path');
 
 
-
 const app = express();
-
 
 app.use(express.json());
 
@@ -18,7 +16,10 @@ app.use((req, res, next) => {
     next();
   });
 
-  
+app.use(helmet({
+  crossOriginResourcePolicy: false
+}));
+
 app.use('/api/books', routeBook);
 app.use('/api/auth', routeUser);
 app.use('/images', express.static(path.join(__dirname, 'images')));

@@ -7,7 +7,7 @@ const validateCreate = (req, res, next) => {
       userId: Joi.string().required(),
       title: Joi.string().required(),
       author: Joi.string().required(),
-      year: Joi.number().required(),
+      year: Joi.number().integer().min(1000).max(2023).required(),
       genre: Joi.string().required(),
       ratings: Joi.array().items(
         Joi.object({
@@ -41,7 +41,7 @@ const validateRating = (req, res, next) => {
 
     const ratingSchema = Joi.object({
       userId: Joi.string().required(),
-      rating: Joi.number().required()
+      rating: Joi.number().min(0).max(5).required()
     });
 
     const { error } = ratingSchema.validate(req.body);
@@ -68,13 +68,13 @@ const validateModif = (req, res, next) => {
       // Si aucun fichier n'est présent, alors utiliser directement req.body
       bookObject = req.body;
     }
-    
+
     const bookSchemaU = Joi.object({
       userId: Joi.string().optional(),
       title: Joi.string().optional(),
       author: Joi.string().optional(),
       imageUrl: Joi.string().optional(),
-      year: Joi.number().optional(),
+      year: Joi.number().integer().min(1000).max(2023).optional(),
       genre: Joi.string().optional(),
     }).min(1).required();
 

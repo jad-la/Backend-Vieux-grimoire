@@ -1,6 +1,5 @@
 const Book = require('../models/Book');
-const fs = require('fs')
-const Joi = require('joi');
+const fs = require('fs');
 
 
 exports.createBook = (req, res, next) => {
@@ -24,9 +23,7 @@ exports.createBook = (req, res, next) => {
               return res.status(400).json({ error: "Ce livre existe déjà" });
           }
           const book = new Book({
-            // Copie toutes les propriétés de l'objet bookObject dans un nouvel objet book
             ...bookObject,
-            // Assigner la valeur de la propriété _userId de l'objet 'req.auth' à la propriété '_userId' de l'objet 'book'
             _userId: req.auth._userId,
             imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
           });
@@ -34,7 +31,7 @@ exports.createBook = (req, res, next) => {
           if (book.userId !== req.auth.userId) {
             return res.status(401).json({ message: 'Non-autorisé' });
           }
-          //  Enregistrer du 'book' dans la base de données
+          //  Enregistrement du 'book' dans la base de données
           book.save()
             .then(() => res.status(201).json({ message: 'Livre enregistré' }))
             .catch(error => res.status(400).json({ error }));
@@ -59,14 +56,14 @@ exports.ajouterNote = (req, res, next) => {
           console.log('book =====> ' + book);
           console.log({id: req.params.id});
           // Vérifier si l'utilisateur a déjà noté ce livre
-          const dejaNoter = book.ratings.some((rating) => rating.userId === userId);
+          const dejaNoter = book.ratings.some((ratingExistant) => ratingExistant.userId === userId);
 
           // Si utilisateur a déja noté alors ==> retourner un message d'erreur
           if (dejaNoter) {
             console.log("Livre déjà noté");
             return res.status(400).json({ message: "Livre déjà noté" });
           }
-
+          
           // Creation de 'newRting' qui contient 'userId' et la note attribué
           const newRating = {
             userId,
@@ -82,12 +79,12 @@ exports.ajouterNote = (req, res, next) => {
           //  Calcule la somme des notes attribuées par les utilisateurs pour ce livre en ajoutant la note 'rating.grade' donnée par l'utilisateur à la somme 'sum'
           const sommeNotes = book.ratings.reduce((sum, ratings) => sum + ratings.grade, 0);
           // Calcule de la moyenne en divisant la somme des notes par le nb de notation
-          book.averageRating = sommeNotes / nbNotation;
+          book.averageRating =(sommeNotes / nbNotation).toFixed(1);
 
           // enregistre le livre mis à jour dans la base de données
           book.save()
             .then((newbook) =>{
-              console.log('le nouveau livre ======>', newbook)
+              console.log('La nouvelle notation du livre ======>', newbook)
               res.status(200).json(newbook);
             })
             .catch(error => res.status(401).json({ error }));
@@ -119,13 +116,12 @@ exports.modifBook = (req, res, next) => {
       // Recherche le livre dans la base de données en utilisant l'id
       Book.findOne({ _id: req.params.id })
         .then((book) => {
-          console.log("le console log de book =====>", book);
-          console.log("le log userId=====>", bookObject.userId);
+          console.log("Le console log de book =====>", book);
+          console.log("Le log userId=====>", bookObject.userId);
           // Si userId associer au livre est différente de l'userId l'utilisateur authentifié ===> alors n'est pas autorisé
           if (book.userId !== req.auth.userId) {
             return res.status(401).json({ message: 'Non-autorisé' });
           } else { 
-            console.log("c'est le bon userIddddd=====>");
             // Sinon alors mettre à jour le livre en utilisant les nouvelles données contenue dans 'value' et conserver l'id du livre
             Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
               .then(() => res.status(200).json({ message: 'Livre modifié' }))
@@ -139,16 +135,6 @@ exports.modifBook = (req, res, next) => {
 exports.deleteBook = (req, res, next) =>{
     // Extraire l'id du livre à partir des paramètres de la requête
     const { id } = req.params;
-
-
-    const idSchema = Joi.string().required();
-
-    const { error } = idSchema.validate(id);
-
-    if (error) {
-      console.log('Erreur de validation =======>', error.details[0].message);
-      return res.status(400).json({ error: error.details[0].message });
-    }
 
   // Trouver le livre à supprimer
     Book.findOne({_id: id})
@@ -176,7 +162,7 @@ exports.getBooksByBestRating = (req, res, next) => {
     Book.find()
       // Trie les résultats  dans l'ordre décroissant pour obtenir les livres les mieux noté en premier
       .sort({ averageRating: -1 })
-      // Limite le résultat rencyé à 3 livres
+      // Limite le résultat à 3 livres
       .limit(3)
       // Exécute la requête et de retourner les résultats
       .exec()
