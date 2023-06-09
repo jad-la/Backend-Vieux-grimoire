@@ -41,7 +41,7 @@ const validateRating = (req, res, next) => {
 
     const ratingSchema = Joi.object({
       userId: Joi.string().required(),
-      rating: Joi.number().min(0).max(5).required()
+      rating: Joi.number().min(1).max(5).required()
     });
 
     const { error } = ratingSchema.validate(req.body);

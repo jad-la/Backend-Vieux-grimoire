@@ -1,7 +1,6 @@
 const multer = require('multer');
 const sharp = require('sharp');
 const fs = require('fs');
-const { Console } = require('console');
 
 
 // Configuration du stockage des fichiers avec Multer

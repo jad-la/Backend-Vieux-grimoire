@@ -37,8 +37,6 @@ exports.createBook = (req, res, next) => {
             .catch(error => res.status(400).json({ error }));
         })
         .catch((error) => res.status(500).json({ error }));
-        
-      
 };
 
 
